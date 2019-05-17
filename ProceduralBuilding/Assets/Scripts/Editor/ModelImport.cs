@@ -71,7 +71,7 @@ public class ModelImport : AssetPostprocessor
     {
         ModelImporter importer = assetImporter as ModelImporter;
         string name = importer.assetPath.ToLower();
-        Debug.Log($"Name : {name}"); 
+        Debug.Log($"Name that importing now : {name}"); 
         string extension = name.Substring(name.LastIndexOf(".")).ToLower();
         
             switch (extension)

@@ -3,14 +3,29 @@ guid: e09ff6046cce43149ba9aa0ef2aefe92
 ModelImporter:
   serializedVersion: 25
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: fassade01.002
+    second: {fileID: 2100000, guid: 129fc5c2645be4c49b836e178661fe65, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: fassade02.002
+    second: {fileID: 2100000, guid: 0b199bb7cc5da8d4082ab3e07db554fa, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: glass01.002
+    second: {fileID: 2100000, guid: f013e6487affc2447a799e9987196fe5, type: 2}
   materials:
     importMaterials: 1
-    materialName: 0
-    materialSearch: 1
-    materialLocation: 1
+    materialName: 1
+    materialSearch: 2
+    materialLocation: 0
   animations:
-    legacyGenerateAnimations: 4
+    legacyGenerateAnimations: 0
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
@@ -35,13 +50,13 @@ ModelImporter:
   meshes:
     lODScreenPercentages: []
     globalScale: 1
-    meshCompression: 0
+    meshCompression: 2
     addColliders: 0
     useSRGBMaterialColor: 1
-    importVisibility: 1
-    importBlendShapes: 1
-    importCameras: 1
-    importLights: 1
+    importVisibility: 0
+    importBlendShapes: 0
+    importCameras: 0
+    importLights: 0
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
@@ -67,7 +82,7 @@ ModelImporter:
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
   referencedClips: []
-  importAnimation: 1
+  importAnimation: 0
   copyAvatar: 0
   humanDescription:
     serializedVersion: 3
