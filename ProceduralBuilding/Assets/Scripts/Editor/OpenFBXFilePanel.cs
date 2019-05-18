@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class OpenFBXFilePanel : EditorWindow
 {
-   public Object source;
+    private const string PREFAB_DESTINATION_DIRECTORY = "Assets/Prefabs/";
     [MenuItem("AAI/Read FBX")]
     static void OpenFBX()
     {
@@ -20,8 +20,7 @@ public class OpenFBXFilePanel : EditorWindow
         GUILayout.Label("1- Select any object in Assets ");
         
         if (Selection.activeGameObject) {
-            Selection.activeGameObject.name =
-            EditorGUILayout.TextField("Object Name: ", Selection.activeGameObject.name);
+             GUILayout.Label(Selection.activeGameObject.name);
         }
         if (GUILayout.Button("Search!"))
         {
@@ -36,6 +35,35 @@ public class OpenFBXFilePanel : EditorWindow
             foreach (var file in GetFiles(GetSelectedPathOrFallback()))
             {
                 AssetDatabase.ImportAsset(file, ImportAssetOptions.Default);
+            }
+        }
+        if (GUILayout.Button("Make Prefab"))
+        {
+            EnsureDirectoryExists(PREFAB_DESTINATION_DIRECTORY);
+            foreach (var file in GetFiles(GetSelectedPathOrFallback()))
+            {
+                GameObject modelAsset = AssetDatabase.LoadAssetAtPath<GameObject>(file);
+                Debug.Log($"Name of game object {modelAsset.name}");
+                var instanceRoot = PrefabUtility.InstantiatePrefab(modelAsset) as GameObject;
+                instanceRoot.AddComponent<Measurement>();
+                string destinationPath = PREFAB_DESTINATION_DIRECTORY + modelAsset.name + ".prefab";
+                PrefabUtility.SaveAsPrefabAsset(instanceRoot, destinationPath);
+                DestroyImmediate(instanceRoot);
+                // AssetDatabase.ImportAsset(file, ImportAssetOptions.Default);
+                //string destinationPath = PREFAB_DESTINATION_DIRECTORY + file + ".prefab";
+                //if (!File.Exists(destinationPath))
+                //{
+                //    PrefabUtility.CreatePrefab(
+                //        destinationPath,
+                //        modelAsset);
+                //}
+                //else
+                //{
+                //    PrefabUtility.ReplacePrefab(
+                //        modelAsset,
+                //        AssetDatabase.LoadAssetAtPath<GameObject>(destinationPath),
+                //        ReplacePrefabOptions.ReplaceNameBased);
+                //}
             }
         }
         EditorGUILayout.EndHorizontal();
@@ -84,5 +112,10 @@ public class OpenFBXFilePanel : EditorWindow
                 }
             }
         }
+    }
+    private static void EnsureDirectoryExists(string directory)
+    {
+        if (!Directory.Exists(directory))
+            Directory.CreateDirectory(directory);
     }
 }

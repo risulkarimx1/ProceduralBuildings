@@ -17,8 +17,7 @@ public class Measurement : MonoBehaviour
     {
         Mesh mesh = GetComponent<MeshFilter>().mesh;
        
-        Vector3[] vertices = mesh.vertices;
-        Bounds bounds = mesh.bounds;
+        var bounds = mesh.bounds;
         var min = bounds.min;
         var max = bounds.max;
         var width = max.x - min.x;
