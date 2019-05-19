@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
@@ -6,6 +7,9 @@ using UnityEngine;
 
 public class OpenFBXFilePanel : EditorWindow
 {
+    int toolbarInt = 0;
+    string[] toolbarStrings = { "Toolbar1", "Toolbar2", "Toolbar3" };
+    private string[] _buildingTypes;
     private const string PREFAB_DESTINATION_DIRECTORY = "Assets/Prefabs/";
     [MenuItem("AAI/Read FBX")]
     static void OpenFBX()
@@ -14,22 +18,46 @@ public class OpenFBXFilePanel : EditorWindow
         window.Show();
     }
 
+    
+    
     void OnGUI()
     {
+        toolbarInt = GUILayout.Toolbar(toolbarInt, toolbarStrings);
         EditorGUILayout.BeginVertical();
         GUILayout.Label("1- Select any object in Assets ");
         
         if (Selection.activeGameObject) {
-             GUILayout.Label(Selection.activeGameObject.name);
-        }
-        if (GUILayout.Button("Search!"))
-        {
-            string filePath = GetSelectedPathOrFallback();
-            Debug.Log(filePath);
-            foreach (var file in GetFiles(filePath)) {
-                Debug.Log($"File {file}");
+            foreach (var file in GetFiles(GetSelectedPathOrFallback()))
+            {
+                int selected = EditorPrefs.GetInt(file);
+                EditorGUILayout.BeginHorizontal();
+                var ObjectName = AssetDatabase.LoadAssetAtPath<GameObject>(file).name;
+                //GUILayout.Label(file);
+                var modulValues = Enum.GetValues(typeof(ModuleType));
+
+                _buildingTypes = new string[modulValues.Length];
+                var index = 0;
+                foreach (var modulValue in modulValues)
+                {
+                    _buildingTypes[index] = modulValue.ToString();
+                }
+
+                selected = EditorGUILayout.Popup(ObjectName, selected, _buildingTypes);
+                EditorPrefs.SetInt(file, selected);
+                EditorGUILayout.EndHorizontal();
             }
         }
+
+        //if (GUILayout.Button("Search!"))
+        //{
+        //    string filePath = GetSelectedPathOrFallback();
+        //    Debug.Log(filePath);
+        //    foreach (var file in GetFiles(filePath)) {
+        //        Debug.Log($"File {file}");
+                
+        //        GUILayout.Label(file);
+        //    }
+        //}
         if (GUILayout.Button("Readable"))
         {
             foreach (var file in GetFiles(GetSelectedPathOrFallback()))
@@ -37,7 +65,7 @@ public class OpenFBXFilePanel : EditorWindow
                 AssetDatabase.ImportAsset(file, ImportAssetOptions.Default);
             }
         }
-        if (GUILayout.Button("Make Prefab"))
+        if (GUILayout.Button("Save Prefab"))
         {
             EnsureDirectoryExists(PREFAB_DESTINATION_DIRECTORY);
             foreach (var file in GetFiles(GetSelectedPathOrFallback()))
@@ -45,7 +73,9 @@ public class OpenFBXFilePanel : EditorWindow
                 GameObject modelAsset = AssetDatabase.LoadAssetAtPath<GameObject>(file);
                 Debug.Log($"Name of game object {modelAsset.name}");
                 var instanceRoot = PrefabUtility.InstantiatePrefab(modelAsset) as GameObject;
-                instanceRoot.AddComponent<Measurement>();
+                var measurement =  instanceRoot.AddComponent<Measurement>();
+
+                measurement.MeasureBlock(EditorPrefs.GetInt(file));
                 string destinationPath = PREFAB_DESTINATION_DIRECTORY + modelAsset.name + ".prefab";
                 PrefabUtility.SaveAsPrefabAsset(instanceRoot, destinationPath);
                 DestroyImmediate(instanceRoot);
@@ -96,8 +126,8 @@ public class OpenFBXFilePanel : EditorWindow
             {
                 //files = Directory.GetFiles(path);
                 files = Directory.GetFiles(path).Where(s => 
-                s.Contains(".fbx") == true &&
-                s.Contains(".meta") == false
+                s.ToLower().Contains(".fbx") == true &&
+                s.ToLower().Contains(".meta") == false
                 ).ToArray<string>();
             }
             catch (System.Exception ex)
